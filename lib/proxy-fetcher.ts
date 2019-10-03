@@ -31,6 +31,11 @@ export class ProxyFetcher {
     const randomProxy = this._list[randomIndex];
 
     return Utils.timeoutRequest(maxSeconds, axiosHttpsProxyFix.get(url, {proxy: randomProxy}))
-      .then((result: any) => cheerio.load(result.data));
+      .then((result: any) => cheerio.load(result.data))
+      .catch((e) => {
+        this._list.splice(this._list.indexOf(randomProxy), 1);
+        console.log('Proxies remaining: ' + this._list.length);
+        throw new Error(e);
+      });
   }
 }

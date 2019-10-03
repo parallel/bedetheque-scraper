@@ -26,14 +26,9 @@ export class Scraper {
     let $: CheerioStatic;
     await Utils.setTimeoutPromise(sleepTime);
 
-    const displayUrl = url
-      .replace('https://www.bedetheque.com/', '')
-      .replace('__10000.html', '');
-
     try {
       $ = await ProxyFetcher.requestProxy(url, 60);
     } catch (e) {
-      console.log(`✗ url: ${displayUrl}`);
       return this.getSerie(url, 500);
     }
 
@@ -43,9 +38,6 @@ export class Scraper {
       .get() as unknown as Album[];
 
     serie.addAlbumsInfo(albums);
-
-    console.log(`✓ url: ${displayUrl}`);
-
     return {serie, albums};
   }
 }

@@ -20,10 +20,10 @@ export class Album {
   public imageExtract: string | null;
   public imageReverse: string | null;
   // voteAverage /100
-  public voteAverage : number;
-  public voteCount : number;
+  public voteAverage: number;
+  public voteCount: number;
 
-  constructor(page : Cheerio, $: CheerioAPI, serieId: number, serieTitle: string) {
+  constructor(page: Cheerio, $: CheerioStatic, serieId: number, serieTitle: string) {
     this.serieId = serieId;
     this.serieTitle = serieTitle;
     this.albumId = parseInt(page.children().first().attr('name'), 10);
@@ -36,15 +36,19 @@ export class Album {
     this.addDetails(page, $);
   }
 
-  private findVoteAverage(page : Cheerio, $: CheerioAPI) {
+  private findVoteAverage(page: Cheerio, $: CheerioStatic) {
     const voteAverage = page.find('.ratingblock  strong').text();
     return voteAverage ? 20 * parseFloat(voteAverage) : 0;
   }
 
-  private findVoteCount(page : Cheerio, $: CheerioAPI) {
-    if (this.voteAverage === null) { return 0; }
+  private findVoteCount(page: Cheerio, $: CheerioStatic) {
+    if (this.voteAverage === null) {
+      return 0;
+    }
     const voteCount = page.find('.ratingblock p').text();
-    if (!voteCount) { return 0; }
+    if (!voteCount) {
+      return 0;
+    }
     return parseInt(voteCount.match(/\(([0-9]+) vote/)![1], 10);
   }
 
@@ -55,7 +59,7 @@ export class Album {
       : null;
   }
 
-  private addDetails(page: Cheerio, $: CheerioAPI) {
+  private addDetails(page: Cheerio, $: CheerioStatic) {
     page.find('.infos > li')
       .each((index, info) => {
         const pageInfo = $(info);
@@ -72,7 +76,9 @@ export class Album {
       ? pageInfo.text().split(':')[1].trim()
       : null;
 
-    if (!value) { return; }
+    if (!value) {
+      return;
+    }
 
     switch (key) {
       case 'scénario':

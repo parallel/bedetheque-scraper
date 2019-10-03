@@ -1,46 +1,53 @@
-import { ProxyFetcher, ProxyType } from './proxy-fetcher';
-import { Utils } from './utils';
-import { Message } from './message';
-import { Serie } from './serie';
-import { Album } from './album';
+import {ProxyFetcher} from './proxy-fetcher';
+import {Utils} from './utils';
+import {Serie} from './serie';
+import {Album} from './album';
 
 export class Scraper {
-  public static async getSeriesUrlFromLetter(proxyList: ProxyType[], letter: string): Promise<any> {
-    Message.searchingSeriesFromLetter(letter);
-    const uri = `https://www.bedetheque.com/bandes_dessinees_${letter}.html`;
-    const $: CheerioAPI = await ProxyFetcher.requestProxy(proxyList, uri);
 
-    if (!$) { return this.getSeriesUrlFromLetter(proxyList, letter); }
+  static async getSeriesUrlFromLetter(letter) {
+    console.log(`Searching all series beginning with the letter ${letter}`);
 
-    const series = $('.nav-liste li')
-      .filter((index, element) => ($(element).find('img').attr('src').includes('France')))
-      .map((index, element) => $(element).find('a').attr('href').replace('.html', '__10000.html'))
-      .get();
+    const url = `https://www.bedetheque.com/bandes_dessinees_${letter}.html`;
+    const promises = Array.from(Array(50)).map(() => ProxyFetcher.requestProxy(url, 10));
 
-    Message.foundSeriesFromLetter(series, letter);
-    return series;
+    const seriesUrl = await Utils.raceFirstSuccess(promises)
+      .then(($) => $('.nav-liste li')
+        .filter((index, element) => ($(element).find('img').attr('src').includes('France')))
+        .map((index, element) => $(element).find('a').attr('href').replace('.html', '__10000.html'))
+        .get()) as string[];
+
+    console.log(`Found ${seriesUrl.length} series beginning with the letter ${letter}`);
+
+    return seriesUrl;
   }
 
-  public static async getSerie(proxyList: ProxyType[], uri: string, sleepTime: number) {
+  static async getSerie(url: string, sleepTime: number) {
+    let $: CheerioStatic;
     await Utils.setTimeoutPromise(sleepTime);
-    const $: CheerioAPI = await ProxyFetcher.requestProxy(proxyList, uri);
-    if (!$) {
-      Message.serieFail(uri);
-      return { serie: null, albums: null };
+
+    const displayUrl = url
+      .replace('https://www.bedetheque.com/', '')
+      .replace('__10000.html', '');
+
+    try {
+      $ = await ProxyFetcher.requestProxy(url, 60);
+    } catch (e) {
+      console.log(`✗ url: ${displayUrl}`);
+      return this.getSerie(url, 500);
     }
+
     const serie = new Serie($);
     const albums = $('.liste-albums > li')
-    .map((index, elem) => new Album($(elem), $, serie.serieId, serie.serieTitle))
-    .get() as unknown as Album[];
-    serie.addAlbumsInfo(albums);
-    Message.serieAdded(serie);
-    return { serie, albums };
-  }
+      .map((index, elem) => new Album($(elem), $, serie.serieId, serie.serieTitle))
+      .get() as unknown as Album[];
 
-  private static raceMultipleRequests(ms: number, promise: Promise<any>) {
-    return new Promise(((resolve, reject) => {
-      setTimeout(() => { reject(new Error('timeout')); }, ms);
-      promise.then(resolve, reject);
-    }));
+    serie.addAlbumsInfo(albums);
+
+    console.log(`✓ url: ${displayUrl}`);
+
+    return {serie, albums};
   }
 }
+
+

@@ -1,4 +1,4 @@
-import { Album } from './album';
+import {Album} from './album';
 
 export class Serie {
   serieId: number;
@@ -7,7 +7,7 @@ export class Serie {
   voteAverage!: number;
   voteCount!: number;
 
-  constructor($: CheerioAPI) {
+  constructor($: CheerioStatic) {
     this.serieId = parseInt($('.idbel').text(), 10);
     this.serieTitle = $('h1 a').text();
   }

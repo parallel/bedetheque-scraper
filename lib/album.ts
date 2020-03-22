@@ -138,7 +138,6 @@ export class Album {
       .trim()
       .toLowerCase()
       .replace(" :", "");
-
     const link = pageInfo.find("a").attr("href");
     const value = pageInfo
       .text()

@@ -45,6 +45,7 @@ var probe_image_size_1 = __importDefault(require("probe-image-size"));
 // image: https://www.bedetheque.com/media/Photos/${image}
 var Author = /** @class */ (function () {
     function Author($) {
+        this.html = $.html();
         var info = $(".auteur-info").text();
         var match = info.match(/Identifiant :([0-9]+)/);
         this.authorId = match ? parseInt(match[1], 10) : null;
@@ -72,11 +73,9 @@ var Author = /** @class */ (function () {
     }
     Author.getImage = function ($) {
         var image = $(".auteur-image img").attr("src");
-        if (!image)
-            return null;
-        return new image_1.ImageDetails(image !== "https://www.bdgest.com/skin/nophoto.png" ? image : null, image !== "https://www.bdgest.com/skin/nophoto.png"
-            ? image.replace("https://www.bedetheque.com/media/Photos/", "")
-            : null);
+        return image && image !== "https://www.bdgest.com/skin/nophoto.png"
+            ? new image_1.ImageDetails(image, image.replace("https://www.bedetheque.com/media/Photos/", ""))
+            : null;
     };
     Author.prototype.getSeriesId = function ($, series, isScen, isDraw) {
         return series

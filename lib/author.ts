@@ -5,6 +5,7 @@ import probe from "probe-image-size";
 
 // image: https://www.bedetheque.com/media/Photos/${image}
 export class Author {
+  html: string;
   authorId: number;
   image?: ImageDetails;
   imageWidth?: number;
@@ -17,6 +18,8 @@ export class Author {
   seriesIdBoth: number[];
 
   constructor($: CheerioStatic) {
+    this.html = $.html();
+    
     const info = $(".auteur-info").text();
 
     let match = info.match(/Identifiant :([0-9]+)/);
@@ -53,13 +56,9 @@ export class Author {
 
   private static getImage($: CheerioStatic): ImageDetails {
     const image = $(".auteur-image img").attr("src");
-    if (!image) return null;
-    return new ImageDetails(
-      image !== "https://www.bdgest.com/skin/nophoto.png" ? image : null,
-      image !== "https://www.bdgest.com/skin/nophoto.png"
-        ? image.replace("https://www.bedetheque.com/media/Photos/", "")
-        : null
-    );
+    return image && image !== "https://www.bdgest.com/skin/nophoto.png" 
+      ? new ImageDetails(image, image.replace("https://www.bedetheque.com/media/Photos/", ""))
+      : null;
   }
 
   private getSeriesId(

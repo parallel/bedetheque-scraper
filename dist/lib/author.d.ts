@@ -1,6 +1,7 @@
 /// <reference types="cheerio" />
 import { ImageDetails } from "./image";
 export declare class Author {
+    html: string;
     authorId: number;
     image?: ImageDetails;
     imageWidth?: number;

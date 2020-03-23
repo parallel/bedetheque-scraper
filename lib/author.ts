@@ -2,6 +2,7 @@ import { Utils } from "./utils";
 import { ImageDetails } from "./image";
 
 import probe from "probe-image-size";
+import moment from 'moment';
 
 // image: https://www.bedetheque.com/media/Photos/${image}
 export class Author {
@@ -13,8 +14,8 @@ export class Author {
   firstName: string;
   lastName: string;
   birthCountry?: string;
-  birthDate?: string;
-  deathDate?: string;
+  birthDate?: Date;
+  deathDate?: Date;
   summary?: string;
   seriesIdScenario: number[];
   seriesIdDrawing: number[];
@@ -39,10 +40,10 @@ export class Author {
     this.birthCountry = $('.pays-auteur').text().replace('(', '').replace(')', '');
 
     match = info.match(/Naissance :le ([0-9]+\/[0-9]+\/[0-9]+)/);
-    this.birthDate = match ? match[1] : null;
+    this.birthDate = match && match[1] ? moment(match[1], 'DD/MM/YYYY').toDate() : null;
 
     match = info.match(/Décès :le ([0-9]+\/[0-9]+\/[0-9]+)/);
-    this.deathDate = match ? match[1] : null;
+    this.deathDate = match && match[1] ? moment(match[1], 'DD/MM/YYYY').toDate() : null;
 
     this.summary = $('.bio').text()?.trim();
 

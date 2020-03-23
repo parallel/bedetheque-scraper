@@ -9,8 +9,8 @@ export declare class Author {
     firstName: string;
     lastName: string;
     birthCountry?: string;
-    birthDate?: string;
-    deathDate?: string;
+    birthDate?: Date;
+    deathDate?: Date;
     summary?: string;
     seriesIdScenario: number[];
     seriesIdDrawing: number[];

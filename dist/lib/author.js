@@ -42,6 +42,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var utils_1 = require("./utils");
 var image_1 = require("./image");
 var probe_image_size_1 = __importDefault(require("probe-image-size"));
+var moment_1 = __importDefault(require("moment"));
 // image: https://www.bedetheque.com/media/Photos/${image}
 var Author = /** @class */ (function () {
     function Author($) {
@@ -57,9 +58,9 @@ var Author = /** @class */ (function () {
         this.image = Author.getImage($);
         this.birthCountry = $('.pays-auteur').text().replace('(', '').replace(')', '');
         match = info.match(/Naissance :le ([0-9]+\/[0-9]+\/[0-9]+)/);
-        this.birthDate = match ? match[1] : null;
+        this.birthDate = match && match[1] ? moment_1.default(match[1], 'DD/MM/YYYY').toDate() : null;
         match = info.match(/Décès :le ([0-9]+\/[0-9]+\/[0-9]+)/);
-        this.deathDate = match ? match[1] : null;
+        this.deathDate = match && match[1] ? moment_1.default(match[1], 'DD/MM/YYYY').toDate() : null;
         this.summary = (_a = $('.bio').text()) === null || _a === void 0 ? void 0 : _a.trim();
         var series = $("table")
             .filter(function (i, e) {

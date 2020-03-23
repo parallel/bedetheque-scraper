@@ -3,6 +3,7 @@ import { Utils } from "./utils";
 import { ImageDetails } from "./image";
 
 export class Serie {
+  html: string;
   serieId: number;
   serieTitle: string;
   serieUrl: string;
@@ -24,6 +25,7 @@ export class Serie {
   type: string;
 
   constructor($: CheerioStatic) {
+    this.html = $.html();
     this.serieId = parseInt($(".idbel").text(), 10);
     this.serieTitle = $("h1 a").text();
     this.serieUrl = $('link[rel="canonical"]').attr("href");

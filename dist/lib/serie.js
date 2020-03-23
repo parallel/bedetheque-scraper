@@ -39,6 +39,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var utils_1 = require("./utils");
 var Serie = /** @class */ (function () {
     function Serie($) {
+        this.html = $.html();
         this.serieId = parseInt($(".idbel").text(), 10);
         this.serieTitle = $("h1 a").text();
         this.serieUrl = $('link[rel="canonical"]').attr("href");

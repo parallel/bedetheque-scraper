@@ -27,6 +27,7 @@ var AuthorDetails = /** @class */ (function () {
 }());
 var Album = /** @class */ (function () {
     function Album(page, $, serieId, serieTitle) {
+        this.html = $.html();
         this.serieId = serieId;
         this.serieTitle = serieTitle;
         this.albumNumber = Album.findAlbumNumber(page);

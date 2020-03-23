@@ -2,6 +2,7 @@
 import { Album } from "./album";
 import { ImageDetails } from "./image";
 export declare class Serie {
+    html: string;
     serieId: number;
     serieTitle: string;
     serieUrl: string;

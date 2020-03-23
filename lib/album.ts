@@ -27,6 +27,7 @@ class AuthorDetails {
 }
 
 export class Album {
+  public html: string;
   public serieId: number;
   public albumId: number;
   public albumNumber: string;
@@ -59,6 +60,7 @@ export class Album {
     serieId: number,
     serieTitle: string
   ) {
+    this.html = $.html();
     this.serieId = serieId;
     this.serieTitle = serieTitle;
     this.albumNumber = Album.findAlbumNumber(page);

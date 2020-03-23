@@ -8,6 +8,7 @@ declare class AuthorDetails {
     constructor(name: string, url: string);
 }
 export declare class Album {
+    html: string;
     serieId: number;
     albumId: number;
     albumNumber: string;

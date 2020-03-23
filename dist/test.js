@@ -37,21 +37,27 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var index_1 = require("./index");
+//const serieUrl =
+"https://www.bedetheque.com/serie-17120-BD-A-18-ans-sous-les-balles-au-Vercors__10000.html";
+var serieUrl = "https://www.bedetheque.com/serie-6-BD-Lanfeust-de-Troy__10000.html";
+//const serieUrl =
+"https://www.bedetheque.com/serie-577-BD-Filles-de-Soleil.html";
+// const serieUrl = "https://www.bedetheque.com/serie-41929-BD-Fantasy.html";
 function run() {
-    //const serieUrl =
-    "https://www.bedetheque.com/serie-17120-BD-A-18-ans-sous-les-balles-au-Vercors__10000.html";
     return __awaiter(this, void 0, void 0, function () {
-        var serieUrl, _a, serie, albums;
+        var proxyList, randomProxy, _a, serie, albums;
         return __generator(this, function (_b) {
             switch (_b.label) {
-                case 0:
-                    serieUrl = "https://www.bedetheque.com/serie-6-BD-Lanfeust-de-Troy__10000.html";
-                    //const serieUrl =
-                    "https://www.bedetheque.com/serie-577-BD-Filles-de-Soleil.html";
-                    return [4 /*yield*/, index_1.Scraper.getSerie(serieUrl)];
+                case 0: return [4 /*yield*/, index_1.ProxyFetcher.getProxyList()];
                 case 1:
+                    proxyList = _b.sent();
+                    randomProxy = proxyList[Math.floor(Math.random() * proxyList.length)];
+                    console.log(randomProxy);
+                    return [4 /*yield*/, index_1.Scraper.getSerie(serieUrl, randomProxy)];
+                case 2:
                     _a = _b.sent(), serie = _a.serie, albums = _a.albums;
                     console.log(serieUrl);
+                    delete serie.html;
                     console.log(serie);
                     return [2 /*return*/];
             }

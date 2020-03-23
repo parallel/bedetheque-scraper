@@ -13,11 +13,15 @@ var utils_1 = require("./utils");
 var image_1 = require("./image");
 var moment_1 = __importDefault(require("moment"));
 var probe_image_size_1 = __importDefault(require("probe-image-size"));
+var simple_isbn_1 = require("simple-isbn");
 var AuthorDetails = /** @class */ (function () {
-    function AuthorDetails(pseudo, url) {
-        this.pseudo = pseudo;
-        this.url = url;
-        this.authorId = utils_1.Utils.urlToAuthorID(url);
+    function AuthorDetails(name, url) {
+        this.name = name.replace('<', '').replace('>', '');
+        // generic names
+        if (!name.startsWith('<')) {
+            this.url = url;
+            this.authorId = utils_1.Utils.urlToAuthorID(url);
+        }
     }
     return AuthorDetails;
 }());
@@ -44,8 +48,8 @@ var Album = /** @class */ (function () {
             .find(".album-main .titre > span")
             .text()
             .trim()
-            .match(/^([0-9]+)/);
-        return parseInt((match && match[1]) || "1", 10);
+            .match(/^(.*)./);
+        return (match && match[0]) || "1";
     };
     Album.findVoteAverage = function (page, $) {
         var voteAverage = page.find(".ratingblock  strong").text();
@@ -63,24 +67,25 @@ var Album = /** @class */ (function () {
     };
     Album.findCover = function (page) {
         var image = page.find(".couv .titre img").attr("src");
-        return new image_1.ImageDetails(image, image
-            ? image.replace("https://www.bedetheque.com/cache/thb_couv/", "")
-            : null);
+        return image
+            ? new image_1.ImageDetails(image, image.replace("https://www.bedetheque.com/cache/thb_couv/", ""))
+            : null;
     };
     Album.findImage = function (page, className, path) {
         var image = page.find(".sous-couv ." + className).attr("href");
-        return new image_1.ImageDetails(image, image
-            ? image.replace("https://www.bedetheque.com/media/" + path + "/", "")
-            : null);
+        return image
+            ? new image_1.ImageDetails(image, image.replace("https://www.bedetheque.com/media/" + path + "/", ""))
+            : null;
     };
     Album.prototype.addDetails = function (page, $) {
         var _this = this;
-        page.find(".infos > li").each(function (index, info) {
+        page.find(".infos > li").each(function (_index, info) {
             var pageInfo = $(info);
             _this.addDetail(pageInfo);
         });
     };
     Album.prototype.addDetail = function (pageInfo) {
+        var _a;
         var key = pageInfo
             .find("label")
             .text()
@@ -88,10 +93,7 @@ var Album = /** @class */ (function () {
             .toLowerCase()
             .replace(" :", "");
         var link = pageInfo.find("a").attr("href");
-        var value = pageInfo
-            .text()
-            .split(":")[1]
-            .trim();
+        var value = (_a = pageInfo.text().split(":")[1]) === null || _a === void 0 ? void 0 : _a.trim();
         if (!value) {
             return;
         }
@@ -116,7 +118,15 @@ var Album = /** @class */ (function () {
                 this.nbrOfPages = parseInt(value, 10);
                 break;
             case "isbn":
-                this.isbn = value;
+                var isbnValue = value.replace(/-/g, '');
+                if (isbnValue.length === 10) {
+                    this.isbn10 = isbnValue;
+                    this.isbn13 = simple_isbn_1.isbn.toIsbn13(isbnValue);
+                }
+                else {
+                    this.isbn10 = simple_isbn_1.isbn.toIsbn10(isbnValue);
+                    this.isbn13 = isbnValue;
+                }
                 break;
             case "créé le":
                 var matches = value.match(/(\d{2})\/(\d{2})\/(\d{4})/g);
@@ -141,11 +151,6 @@ var Album = /** @class */ (function () {
     };
     Album.formatAlbumsFromSerie = function ($, serie) {
         return $(".liste-albums > li")
-            .filter(function (_index, elem) {
-            return $(elem)
-                .find(".numa")
-                .text() === "";
-        })
             .map(function (_index, elem) { return new Album($(elem), $, serie.serieId, serie.serieTitle); })
             .get();
     };

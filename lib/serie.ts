@@ -70,7 +70,7 @@ export class Serie {
     this.serieCoverHeight = albums[0].imageCoverHeight;
 
     this.dateBegin = albums[0].date;
-    this.dateEnd = albums[albums.length - 1].date;
+    this.dateEnd = this.status !== "In progress" ? albums[albums.length - 1].date : null;
   }
 
   private getVoteAverage(albums: Album[]) {

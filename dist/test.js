@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -45,12 +46,13 @@ function run() {
             switch (_b.label) {
                 case 0:
                     serieUrl = "https://www.bedetheque.com/serie-6-BD-Lanfeust-de-Troy__10000.html";
+                    //const serieUrl =
+                    "https://www.bedetheque.com/serie-577-BD-Filles-de-Soleil.html";
                     return [4 /*yield*/, index_1.Scraper.getSerie(serieUrl)];
                 case 1:
                     _a = _b.sent(), serie = _a.serie, albums = _a.albums;
                     console.log(serieUrl);
                     console.log(serie);
-                    console.log(albums);
                     return [2 /*return*/];
             }
         });

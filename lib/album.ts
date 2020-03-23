@@ -10,23 +10,26 @@ import { Utils } from "./utils";
 import { ImageDetails } from "./image";
 import moment from "moment";
 import probe from "probe-image-size";
-
+import { isbn } from 'simple-isbn';
 class AuthorDetails {
-  public pseudo?: string;
+  public name?: string;
   public authorId?: number;
   public url?: string;
 
-  constructor(pseudo: string, url: string) {
-    this.pseudo = pseudo;
-    this.url = url;
-    this.authorId = Utils.urlToAuthorID(url);
+  constructor(name: string, url: string) {
+    this.name = name.replace('<', '').replace('>', '');
+    // generic names
+    if (!name.startsWith('<')) {
+      this.url = url;
+      this.authorId = Utils.urlToAuthorID(url);
+    }
   }
 }
 
 export class Album {
   public serieId: number;
   public albumId: number;
-  public albumNumber: number;
+  public albumNumber: string;
   public albumUrl: string;
   public serieTitle: string;
   public albumTitle: string;
@@ -35,7 +38,8 @@ export class Album {
   public colors?: AuthorDetails;
   public date: Date;
   public editor?: string;
-  public isbn?: string;
+  public isbn10?: string;
+  public isbn13?: string;
   public nbrOfPages?: number;
   public imageCover?: ImageDetails;
   public imageCoverWidth?: number;
@@ -75,13 +79,13 @@ export class Album {
     this.addDetails(page, $);
   }
 
-  private static findAlbumNumber(page: Cheerio) {
+  private static findAlbumNumber(page: Cheerio): string {
     const match = page
       .find(".album-main .titre > span")
       .text()
       .trim()
-      .match(/^([0-9]+)/);
-    return parseInt((match && match[1]) || "1", 10);
+      .match(/^(.*)./);
+    return (match && match[0]) || "1";
   }
 
   private static findVoteAverage(page: Cheerio, $: CheerioStatic) {
@@ -89,7 +93,7 @@ export class Album {
     return voteAverage ? 20 * parseFloat(voteAverage) : 0;
   }
 
-  private findVoteCount(page: Cheerio, $: CheerioStatic) {
+  private findVoteCount(page: Cheerio, $: CheerioStatic): number {
     if (this.voteAverage === null) {
       return 0;
     }
@@ -102,12 +106,9 @@ export class Album {
 
   private static findCover(page: Cheerio): ImageDetails {
     const image = page.find(".couv .titre img").attr("src");
-    return new ImageDetails(
-      image,
-      image
-        ? image.replace("https://www.bedetheque.com/cache/thb_couv/", "")
-        : null
-    );
+    return image 
+      ? new ImageDetails(image, image.replace("https://www.bedetheque.com/cache/thb_couv/", ""))
+      : null;
   }
 
   private static findImage(
@@ -116,16 +117,13 @@ export class Album {
     path: string
   ): ImageDetails {
     const image = page.find(`.sous-couv .${className}`).attr("href");
-    return new ImageDetails(
-      image,
-      image
-        ? image.replace(`https://www.bedetheque.com/media/${path}/`, "")
-        : null
-    );
+    return image 
+      ? new ImageDetails(image, image.replace(`https://www.bedetheque.com/media/${path}/`, "")) 
+      : null;
   }
 
   private addDetails(page: Cheerio, $: CheerioStatic) {
-    page.find(".infos > li").each((index, info) => {
+    page.find(".infos > li").each((_index, info) => {
       const pageInfo = $(info);
       this.addDetail(pageInfo);
     });
@@ -138,11 +136,9 @@ export class Album {
       .trim()
       .toLowerCase()
       .replace(" :", "");
+
     const link = pageInfo.find("a").attr("href");
-    const value = pageInfo
-      .text()
-      .split(":")[1]
-      .trim();
+    const value = pageInfo.text().split(":")[1]?.trim();
 
     if (!value) {
       return;
@@ -169,7 +165,14 @@ export class Album {
         this.nbrOfPages = parseInt(value, 10);
         break;
       case "isbn":
-        this.isbn = value;
+        const isbnValue = value.replace(/-/g, '');
+        if (isbnValue.length === 10) {
+          this.isbn10 = isbnValue;
+          this.isbn13 = isbn.toIsbn13(isbnValue);
+        } else {
+          this.isbn10 = isbn.toIsbn10(isbnValue);
+          this.isbn13 = isbnValue;
+        }
         break;
       case "créé le":
         const matches = value.match(/(\d{2})\/(\d{2})\/(\d{4})/g);
@@ -197,12 +200,6 @@ export class Album {
 
   static formatAlbumsFromSerie($: CheerioStatic, serie: Serie) {
     return ($(".liste-albums > li")
-      .filter(
-        (_index, elem) =>
-          $(elem)
-            .find(".numa")
-            .text() === ""
-      )
       .map(
         (_index, elem) => new Album($(elem), $, serie.serieId, serie.serieTitle)
       )

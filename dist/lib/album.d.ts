@@ -2,15 +2,15 @@
 import { Serie } from "./serie";
 import { ImageDetails } from "./image";
 declare class AuthorDetails {
-    pseudo?: string;
+    name?: string;
     authorId?: number;
     url?: string;
-    constructor(pseudo: string, url: string);
+    constructor(name: string, url: string);
 }
 export declare class Album {
     serieId: number;
     albumId: number;
-    albumNumber: number;
+    albumNumber: string;
     albumUrl: string;
     serieTitle: string;
     albumTitle: string;
@@ -19,7 +19,8 @@ export declare class Album {
     colors?: AuthorDetails;
     date: Date;
     editor?: string;
-    isbn?: string;
+    isbn10?: string;
+    isbn13?: string;
     nbrOfPages?: number;
     imageCover?: ImageDetails;
     imageCoverWidth?: number;

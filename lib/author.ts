@@ -10,9 +10,12 @@ export class Author {
   image?: ImageDetails;
   imageWidth?: number;
   imageHeight?: number;
-  name: string;
+  firstName: string;
+  lastName: string;
+  birthCountry?: string;
   birthDate?: string;
   deathDate?: string;
+  summary?: string;
   seriesIdScenario: number[];
   seriesIdDrawing: number[];
   seriesIdBoth: number[];
@@ -25,14 +28,23 @@ export class Author {
     let match = info.match(/Identifiant :([0-9]+)/);
     this.authorId = match ? parseInt(match[1], 10) : null;
 
-    this.name = $(".auteur-nom").text();
+    match = info.match(/Prénom :(.*)/);
+    this.firstName = match[1];
+
+    match = info.match(/Nom :(.*)/);
+    this.lastName = match[1];
+
     this.image = Author.getImage($);
+
+    this.birthCountry = $('.pays-auteur').text().replace('(', '').replace(')', '');
 
     match = info.match(/Naissance :le ([0-9]+\/[0-9]+\/[0-9]+)/);
     this.birthDate = match ? match[1] : null;
 
     match = info.match(/Décès :le ([0-9]+\/[0-9]+\/[0-9]+)/);
     this.deathDate = match ? match[1] : null;
+
+    this.summary = $('.bio').text()?.trim();
 
     const series = $("table")
       .filter(

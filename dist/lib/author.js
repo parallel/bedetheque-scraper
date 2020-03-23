@@ -45,16 +45,22 @@ var probe_image_size_1 = __importDefault(require("probe-image-size"));
 // image: https://www.bedetheque.com/media/Photos/${image}
 var Author = /** @class */ (function () {
     function Author($) {
+        var _a;
         this.html = $.html();
         var info = $(".auteur-info").text();
         var match = info.match(/Identifiant :([0-9]+)/);
         this.authorId = match ? parseInt(match[1], 10) : null;
-        this.name = $(".auteur-nom").text();
+        match = info.match(/Prénom :(.*)/);
+        this.firstName = match[1];
+        match = info.match(/Nom :(.*)/);
+        this.lastName = match[1];
         this.image = Author.getImage($);
+        this.birthCountry = $('.pays-auteur').text().replace('(', '').replace(')', '');
         match = info.match(/Naissance :le ([0-9]+\/[0-9]+\/[0-9]+)/);
         this.birthDate = match ? match[1] : null;
         match = info.match(/Décès :le ([0-9]+\/[0-9]+\/[0-9]+)/);
         this.deathDate = match ? match[1] : null;
+        this.summary = (_a = $('.bio').text()) === null || _a === void 0 ? void 0 : _a.trim();
         var series = $("table")
             .filter(function (i, e) {
             return $(e)

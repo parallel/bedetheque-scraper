@@ -45,39 +45,21 @@ var serieUrl = "https://www.bedetheque.com/serie-6-BD-Lanfeust-de-Troy__10000.ht
 // const serieUrl = "https://www.bedetheque.com/serie-41929-BD-Fantasy.html";
 function run() {
     return __awaiter(this, void 0, void 0, function () {
-        var proxyList, randomProxy, letters, _i, letters_1, letter, authorUrls, _a, authorUrls_1, authorUrl, author;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
+        var proxyList, randomProxy, authorUrl, author;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
                 case 0: return [4 /*yield*/, index_1.ProxyFetcher.getProxyList()];
                 case 1:
-                    proxyList = _b.sent();
+                    proxyList = _a.sent();
                     randomProxy = proxyList[Math.floor(Math.random() * proxyList.length)];
-                    letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0'.split('');
-                    _i = 0, letters_1 = letters;
-                    _b.label = 2;
+                    authorUrl = 'https://www.bedetheque.com/auteur-34760-BD-Abella-Bresco-Marcal.html';
+                    return [4 /*yield*/, index_1.Scraper.getAuthor(authorUrl, randomProxy)];
                 case 2:
-                    if (!(_i < letters_1.length)) return [3 /*break*/, 8];
-                    letter = letters_1[_i];
-                    return [4 /*yield*/, index_1.Scraper.getAuthorsUrlFromLetter(letter, randomProxy)];
-                case 3:
-                    authorUrls = _b.sent();
-                    _a = 0, authorUrls_1 = authorUrls;
-                    _b.label = 4;
-                case 4:
-                    if (!(_a < authorUrls_1.length)) return [3 /*break*/, 7];
-                    authorUrl = authorUrls_1[_a];
-                    return [4 /*yield*/, index_1.Scraper.getAuthor(authorUrl)];
-                case 5:
-                    author = _b.sent();
-                    console.log(author.name);
-                    _b.label = 6;
-                case 6:
-                    _a++;
-                    return [3 /*break*/, 4];
-                case 7:
-                    _i++;
-                    return [3 /*break*/, 2];
-                case 8: return [2 /*return*/];
+                    author = _a.sent();
+                    delete author.html;
+                    console.log(authorUrl);
+                    console.log(author);
+                    return [2 /*return*/];
             }
         });
     });

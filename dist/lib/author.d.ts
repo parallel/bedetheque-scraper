@@ -6,9 +6,12 @@ export declare class Author {
     image?: ImageDetails;
     imageWidth?: number;
     imageHeight?: number;
-    name: string;
+    firstName: string;
+    lastName: string;
+    birthCountry?: string;
     birthDate?: string;
     deathDate?: string;
+    summary?: string;
     seriesIdScenario: number[];
     seriesIdDrawing: number[];
     seriesIdBoth: number[];
